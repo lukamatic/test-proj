@@ -7,6 +7,7 @@ on:
 env:
   DOTNET_VERSION: '5.0.x'
   PHARAMCY_SOLUTION_PATH: './Pharmacy'
+  PHARAMCY_UNIT_TESTS_PATH: './Pharmacy/PharmacyTests'
 
 jobs:
   build-and-test:
@@ -32,4 +33,4 @@ jobs:
         run: dotnet build --configuration Release --no-restore ${{ env.PHARAMCY_SOLUTION_PATH }}
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal ${{ env.PHARAMCY_SOLUTION_PATH }}
+        run: dotnet test --no-restore --verbosity normal ${{ env.PHARAMCY_UNIT_TESTS_PATH }}
