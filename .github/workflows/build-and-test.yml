@@ -4,13 +4,26 @@ on:
   pull_request:
     branches: [master, development]
 
+env:
+  DOTNET_VERSION: '5.0.x'
+  PHARMACY_PROJECT_PATH: './Pharmacy'
+
 jobs:
-  run-shell-command:
+  build-and-test:
+    name: Build and Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_project: ['PharmacyUnitTests']
+
     steps:
-      - name: echo a string
-        run: echo "Hello world"
-      - name: multiline script
-        run: |
-          node -v
-          npm -v
+      - name: Checkout
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        run: dotnet restore
