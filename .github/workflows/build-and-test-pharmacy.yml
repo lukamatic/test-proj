@@ -9,7 +9,7 @@ on:
   pull_request:
     branches: [master, development]
     paths:
-      - './Pharmacy/**'
+      - 'Pharmacy/**'
 
 jobs:
   build-and-test:
