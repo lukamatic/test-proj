@@ -29,7 +29,7 @@ jobs:
         run: dotnet restore ${{ env.PHARAMCY_SOLUTION_PATH }}
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore ${{ env.PHARAMCY_SOLUTION_PATH }}
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --no-restore --verbosity normal ${{ env.PHARAMCY_SOLUTION_PATH }}
