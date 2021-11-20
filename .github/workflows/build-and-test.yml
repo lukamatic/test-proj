@@ -25,8 +25,8 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install dependencies ${{ env.PHARAMCY_SOLUTION_PATH }}
-        run: dotnet restore
+      - name: Install dependencies
+        run: dotnet restore ${{ env.PHARAMCY_SOLUTION_PATH }}
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
