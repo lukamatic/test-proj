@@ -1,4 +1,4 @@
-name: Shell Commands
+name: Build and Test
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v1.7.2
@@ -27,3 +27,9 @@ jobs:
 
       - name: Install dependencies
         run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
