@@ -6,7 +6,7 @@ on:
 
 env:
   DOTNET_VERSION: '5.0.x'
-  PHARMACY_PROJECT_PATH: './Pharmacy'
+  PHARAMCY_SOLUTION_PATH: './Pharmacy'
 
 jobs:
   build-and-test:
@@ -25,7 +25,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install dependencies
+      - name: Install dependencies ${{ env.PHARAMCY_SOLUTION_PATH }}
         run: dotnet restore
 
       - name: Build
