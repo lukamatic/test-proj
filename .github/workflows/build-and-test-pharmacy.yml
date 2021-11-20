@@ -9,7 +9,7 @@ on:
   pull_request:
     branches: [master, development]
     paths:
-      - ${{ env.PHARAMCY_SOLUTION_PATH }}
+      - './Pharmacy/**'
 
 jobs:
   build-and-test:
