@@ -1,13 +1,15 @@
-name: Build and Test
-
-on:
-  pull_request:
-    branches: [master, development]
+name: Build and Test Pharmacy
 
 env:
   DOTNET_VERSION: '5.0.x'
   PHARAMCY_SOLUTION_PATH: './Pharmacy'
   PHARAMCY_UNIT_TESTS_PATH: './Pharmacy/PharmacyTests'
+
+on:
+  pull_request:
+    branches: [master, development]
+    paths:
+      - ${{ env.PHARAMCY_SOLUTION_PATH }}
 
 jobs:
   build-and-test:
