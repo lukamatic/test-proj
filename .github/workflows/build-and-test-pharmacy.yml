@@ -9,7 +9,7 @@ on:
 env:
   DOTNET_VERSION: '5.0.x'
   PHARMACY_SOLUTION_PATH: './Pharmacy'
-  PHARMACY_UNIT_TESTS_PATH: './Pharmacy/PharmacyTests'
+  PHARMACY_UNIT_TESTS_PATH: './Pharmacy/PharmacyUnitTests'
 
 jobs:
   build-and-test:
