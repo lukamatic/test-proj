@@ -8,16 +8,13 @@ on:
 
 env:
   DOTNET_VERSION: '5.0.x'
-  PHARAMCY_SOLUTION_PATH: './Pharmacy'
-  PHARAMCY_UNIT_TESTS_PATH: './Pharmacy/PharmacyTests'
+  PHARMACY_SOLUTION_PATH: './Pharmacy'
+  PHARMACY_UNIT_TESTS_PATH: './Pharmacy/PharmacyUnitTests'
 
 jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test_project: ['PharmacyUnitTests']
 
     steps:
       - name: Checkout
@@ -29,10 +26,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Install dependencies
-        run: dotnet restore ${{ env.PHARAMCY_SOLUTION_PATH }}
+        run: dotnet restore ${{ env.PHARMACY_SOLUTION_PATH }}
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore ${{ env.PHARAMCY_SOLUTION_PATH }}
+        run: dotnet build --configuration Release --no-restore ${{ env.PHARMACY_SOLUTION_PATH }}
 
-      - name: Test
-        run: dotnet test --no-restore --verbosity normal ${{ env.PHARAMCY_UNIT_TESTS_PATH }}
+      - name: Run Unit Tests
+        run: dotnet test --no-restore --verbosity normal ${{ env.PHARMACY_UNIT_TESTS_PATH }}
