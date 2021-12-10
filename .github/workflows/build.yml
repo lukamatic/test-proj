@@ -48,5 +48,5 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"lukamatic_test-proj" /o:"lukamatic" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build --configuration Release --no-restore ${{ env.PHARMACY_SOLUTION_PATH }}
+          dotnet build ${{ env.PHARMACY_SOLUTION_PATH }}
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
