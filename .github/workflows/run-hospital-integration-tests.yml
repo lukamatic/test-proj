@@ -9,6 +9,7 @@ on:
 env:
   DOTNET_VERSION: '5.0.x'
   HOSPITAL_SOLUTION_PATH: './Hospital'
+  HOSPITAL_API_PATH: './Hospital/HospitalApi'
   HOSPITAL_INTEGRATION_TESTS_PATH: './Hospital/HospitalIntegrationTests'
 
 jobs:
@@ -34,6 +35,9 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore ${{ env.HOSPITAL_SOLUTION_PATH }}
+
+      - name: Run Hospital Api
+        run: dotnet run ${{ env.HOSPITAL_API_PATH }}
 
       - name: Run Integration Tests
         run: dotnet test --no-restore --verbosity normal ${{ env.HOSPITAL_INTEGRATION_TESTS_PATH }}
