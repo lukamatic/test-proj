@@ -1,22 +1,33 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Hospital.Database.Infrastructure;
+using Hospital.SharedModel.Repository.Base;
+using Hospital.SharedModel.Repository.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Autofac;
-using Hospital.Infrastructure;
 using System.Reflection;
-using Hospital.Repositories.DbImplementation;
-using Hospital.Repositories.Base;
-using Autofac.Extensions.DependencyInjection;
+using System.Text;
+using System.Text.Json.Serialization;
+using Hospital.Database.EfStructures;
+using Hospital.SharedModel.Model;
+using HospitalApi.HttpRequestSenders;
+using HospitalApi.HttpRequestSenders.Implementation;
+using Microsoft.AspNetCore.Identity;
+using Hospital.Schedule.Service.ServiceInterface;
+using Hospital.Schedule.Service;
+using Hospital.Schedule.Service.Interfaces;
+using Hospital.SharedModel.Service;
+using Hospital.SharedModel.Service.Implementation;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalApi
 {
@@ -34,7 +45,20 @@ namespace HospitalApi
         {
             services.AddCors(options => options.AddPolicy("MyCorsImplementationPolicy", builder => builder.WithOrigins("*")));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+               options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
+
+            services.AddControllers().AddJsonOptions(opt =>
+            {
+                opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+             );
+
+            services.AddScoped<IJWTTokenGenerator, JWTTokenGenerator>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -42,8 +66,54 @@ namespace HospitalApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HospitalApi", Version = "v1" });
             });
+
+            services.AddDbContextPool<AppDbContext>(options =>
+            {
+                var connectionString = Environment.GetEnvironmentVariable("HOSPITAL_DB_PATH");
+                options.UseNpgsql(connectionString);
+                using (var context = new AppDbContext((DbContextOptions<AppDbContext>)options.Options))
+                {
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
+                }
+            });
+
+            services.AddIdentity<User, IdentityRole<int>>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 6;
+                    options.SignIn.RequireConfirmedAccount = true;
+                }).AddRoles<IdentityRole<int>>()
+                .AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
+            services.AddAuthentication(cfg =>
+            {
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Token:Key"])),
+                    ValidIssuer = Configuration["Token:Issuer"],
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                };
+            });
+            services.AddHostedService<ConsumeScopedServiceHostedService>();
+            services.AddScoped<IPatientSurveyService, PatientSurveyService>();
+            services.AddScoped<IScheduledEventService, ScheduledEventService>();
+            services.AddScoped<ISurveyService, SurveyService>();
+       
+
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new DbModule());
+
             builder.RegisterModule(new RepositoryModule()
             {
 
@@ -51,11 +121,13 @@ namespace HospitalApi
                 {
                     typeof (CityReadRepository).Assembly
                 },
-                Namespace = "Hospital.Repositories"
+                Namespace = "Repository"
 
 
-            }); 
+            });
+            
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<HttpRequestSender>().As<IHttpRequestSender>();
             builder.Populate(services);
             var container = builder.Build();
             return new AutofacServiceProvider(container);
@@ -76,7 +148,7 @@ namespace HospitalApi
             app.UseRouting();
 
             app.UseCors("MyCorsImplementationPolicy");
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

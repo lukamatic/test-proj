@@ -1,11 +1,12 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Integration.Infrastructure;
-using Integration.Repositories.Base;
-using Integration.Repositories.DbImplementation;
+using Grpc.Core;
+using Integration.Database.Infrastructure;
+using Integration.Partnership.Service;
+using Integration.Shared.Repository.Base;
+using Integration.Shared.Repository.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,9 +15,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
+using Integration.Database.EfStructures;
+using IntegrationAPI.HttpRequestSenders;
+using IntegrationAPI.HttpRequestSenders.Implementation;
+using Integration.Tendering.Service;
+using Microsoft.EntityFrameworkCore;
 
-namespace Integration
+namespace IntegrationAPI
 {
     public class Startup
     {
@@ -26,6 +31,7 @@ namespace Integration
         }
 
         public IConfiguration Configuration { get; }
+        private Server server;
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
@@ -40,6 +46,22 @@ namespace Integration
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "IntegrationApi", Version = "v1" });
             });
+            services.AddHostedService<BenefitRabbitMqService>();
+            services.AddHostedService<NewTenderOfferRabbitMQService>();
+
+            services.AddDbContextPool<AppDbContext>(options =>
+            {
+                var connectionString = Environment.GetEnvironmentVariable("INTEGRATION_DB_PATH");
+                options.UseNpgsql(connectionString);
+                using (var context = new AppDbContext((DbContextOptions<AppDbContext>)options.Options))
+                {
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
+                }
+            });
+
             var builder = new ContainerBuilder();
             builder.RegisterModule(new DbModule());
             builder.RegisterModule(new RepositoryModule()
@@ -49,17 +71,18 @@ namespace Integration
                 {
                     typeof (CityReadRepository).Assembly
                 },
-                Namespace = "Integration.Repositories"
+                Namespace = "Repository"
 
 
             });
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<HttpRequestSender>().As<IHttpRequestSender>();
             builder.Populate(services);
             var container = builder.Build();
             return new AutofacServiceProvider(container);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
 
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -82,6 +105,22 @@ namespace Integration
                 endpoints.MapControllers();
             });
 
+            server = new Server
+            {
+                Services = { },
+                Ports = { new ServerPort("127.0.0.1", 3000, ServerCredentials.Insecure) }
+            };
+            server.Start();
+
+            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+        }
+
+        private void OnShutdown()
+        {
+            if (server != null)
+            {
+                server.ShutdownAsync().Wait();
+            }
         }
     }
 }

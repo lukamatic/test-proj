@@ -1,0 +1,39 @@
+name: Run Hospital Integration Tests
+
+on:
+  pull_request:
+    branches: [master, development]
+    paths:
+      - 'Hospital/**'
+
+env:
+  DOTNET_VERSION: '5.0.x'
+  HOSPITAL_SOLUTION_PATH: './Hospital'
+  HOSPITAL_INTEGRATION_TESTS_PATH: './Hospital/HospitalIntegrationTests'
+
+jobs:
+  build-and-run-integration-tests:
+    name: Build and Run Hospital Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Start dependencies (docker-compose)
+        working-directory: Stacks
+        run: docker-compose -f hospital-integration-tests-docker-compose.yml up -d
+
+      - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        run: dotnet restore ${{ env.HOSPITAL_SOLUTION_PATH }}
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore ${{ env.HOSPITAL_SOLUTION_PATH }}
+
+      - name: Run Unit Tests
+        run: dotnet test --no-restore --verbosity normal ${{ env.HOSPITAL_INTEGRATION_TESTS_PATH }}
