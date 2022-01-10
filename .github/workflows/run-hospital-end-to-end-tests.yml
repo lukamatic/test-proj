@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     container: mcr.microsoft.com/dotnet/sdk:5.0
 
     services:
@@ -23,6 +23,8 @@ jobs:
           POSTGRES_USER: postgres
       rabbitmq:
         image: rabbitmq:3-management-alpine
+      chrome:
+        image: google/dart:latest
 
     steps:
       - name: Check out code
