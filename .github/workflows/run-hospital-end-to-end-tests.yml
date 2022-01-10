@@ -23,10 +23,10 @@ jobs:
           POSTGRES_USER: postgres
       rabbitmq:
         image: rabbitmq:3-management-alpine
-      chrome:
-        image: google/dart:latest
 
     steps:
+      - run: chrome --version
+
       - name: Check out code
         uses: actions/checkout@v2
 
