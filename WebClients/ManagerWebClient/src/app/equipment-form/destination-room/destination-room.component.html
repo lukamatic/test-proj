@@ -1,0 +1,84 @@
+<div style="height: 100%">
+  <div class="d-flex justify-content-center">
+    <h6 class="text-muted subtitle">Step 2: Choose room to move to</h6>
+  </div>
+  <div class="row ms-5 mt-5">
+    <div class="col-12">
+      <input
+        class="searchInput form-control"
+        type="text"
+        placeholder="search..."
+        [(ngModel)]="searchRoomName"
+        (input)="searchRoomsByName()"
+      />
+    </div>
+  </div>
+  <div class="row mb-3 mt-2 d-flex justify-content-center">
+    <div class="col-11">
+      <div style="height: 270px; overflow: auto" id="table">
+        <table class="table table-hover equipmentTable">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Room</th>
+              <th scope="col">Building</th>
+              <th scope="col">Type</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="!isLoading">
+            <tr
+              *ngFor="let room of foundRooms"
+              (click)="selectDestinationRoom(room)"
+              [ngClass]="thisRoom == room ? 'selected' : 'notSelected'"
+            >
+              <th scope="row" *ngIf="selectedItem.roomId != room.id"></th>
+              <td data-label="Room" *ngIf="selectedItem.roomId != room.id">
+                {{ room.name }}
+              </td>
+              <td data-label="Building" *ngIf="selectedItem.roomId != room.id">
+                {{ room.buildingName }}
+              </td>
+              <td
+                data-label="Type"
+                *ngIf="selectedItem.roomId != room.id && room.roomType == 0"
+              >
+                Appointment Room
+              </td>
+              <td
+                data-label="Type"
+                *ngIf="selectedItem.roomId != room.id && room.roomType == 1"
+              >
+                Operation Room
+              </td>
+              <td
+                data-label="Type"
+                *ngIf="selectedItem.roomId != room.id && room.roomType == 2"
+              >
+                Storage
+              </td>
+              <td
+                data-label="Type"
+                *ngIf="selectedItem.roomId != room.id && room.roomType == 3"
+              >
+                Patient bedroom
+              </td>
+              <td
+                data-label="Type"
+                *ngIf="selectedItem.roomId != room.id && room.roomType == 4"
+              >
+                Office
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <mat-card
+          *ngIf="isLoading"
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <mat-progress-spinner color="primary" mode="indeterminate">
+          </mat-progress-spinner>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

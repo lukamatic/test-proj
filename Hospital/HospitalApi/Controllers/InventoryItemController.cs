@@ -1,12 +1,8 @@
-﻿using Hospital.Model;
-using Hospital.Repositories;
-using Hospital.Repositories.Base;
-using Microsoft.AspNetCore.Http;
+﻿using Hospital.RoomsAndEquipment.Model;
+using Hospital.RoomsAndEquipment.Repository;
+using Hospital.SharedModel.Repository.Base;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HospitalApi.Controllers
 {
@@ -21,12 +17,12 @@ namespace HospitalApi.Controllers
             _uow = uow;
         }
 
-        /*[HttpPost]
+        [HttpPost]
         public IActionResult AddInventoryItems(IEnumerable<InventoryItem> inventoryItems)
         {
             var inventoryItemRepo = _uow.GetRepository<IInventoryItemWriteRepository>();
             return Ok(inventoryItemRepo.AddRange(inventoryItems));
-        }*/
+        }
 
     }
 }

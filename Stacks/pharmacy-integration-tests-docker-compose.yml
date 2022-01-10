@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+
+  pharmacyapi:
+    build:
+      dockerfile: Stacks/Build/Pharmacy/Dockerfile
+      context: ../
+    ports:  
+      - "8089:80"
+    restart: on-failure
+    depends_on:
+      - pharmacydb
+      - rabbitmq
+    environment:
+      PHARMACY_DB_PATH: "host=pharmacydb;port=5432;database=PHARMACY;username=postgres;password=postgres"
+      RABBITMQ_HOST: "rabbitmq"
+
+  pharmacydb:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "PHARMACY"
+    ports:
+      - 5455:5432
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
