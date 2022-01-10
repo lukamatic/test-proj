@@ -47,6 +47,11 @@ jobs:
           dotnet run --project Hospital/HospitalApi/ --urls=http://localhost:44303 &
           dotnet run --project Integration/IntegrationApi/ --urls=http://localhost:44302 &
 
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
       - name: Install npm dependencies for web-client
         working-directory: ./WebClients/PatientWebClient
         run: npm ci
