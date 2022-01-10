@@ -28,6 +28,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - uses: browser-actions/setup-chrome@latest
+
       - name: Restore NuGet packages
         run: |
           dotnet restore ${{ env.PROJECT_PATH_HOSPITAL }}
@@ -59,8 +61,6 @@ jobs:
       - name: Build web-client
         working-directory: ./WebClients/PatientWebClient
         run: npm run start &
-
-      - uses: nanasess/setup-chromedriver@v1
 
       - name: Sleep for 15 seconds
         run: sleep 15s
