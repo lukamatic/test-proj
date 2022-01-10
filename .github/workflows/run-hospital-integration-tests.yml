@@ -25,6 +25,11 @@ jobs:
         working-directory: Stacks
         run: docker-compose -f hospital-integration-tests-docker-compose.yml up -d
 
+      - name: Wait for SQL Server container
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '5s'
+
       - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v1.7.2
         with:
