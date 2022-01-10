@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Hospital.SharedModel.Model;
+using Hospital.SharedModel.Repository;
+using Hospital.SharedModel.Repository.Base;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hospital.Repositories.Base;
-using Hospital.Model;
-using Hospital.Repositories;
 
 namespace HospitalApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     public class CityController : ControllerBase
     {
         private readonly IUnitOfWork uow;
@@ -24,7 +21,7 @@ namespace HospitalApi.Controllers
 
             var CityReadRepo = uow.GetRepository<ICityReadRepository>();
 
-            return CityReadRepo.GetAll(); //
+            return CityReadRepo.GetAll(); 
         }
 
 
