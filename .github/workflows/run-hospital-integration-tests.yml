@@ -35,5 +35,5 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore ${{ env.HOSPITAL_SOLUTION_PATH }}
 
-      - name: Run Unit Tests
+      - name: Run Integration Tests
         run: dotnet test --no-restore --verbosity normal ${{ env.HOSPITAL_INTEGRATION_TESTS_PATH }}
