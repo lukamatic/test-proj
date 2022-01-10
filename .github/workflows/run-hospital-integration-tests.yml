@@ -37,7 +37,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore ${{ env.HOSPITAL_SOLUTION_PATH }}
 
       - name: Run Hospital Api
-        run: dotnet run ${{ env.HOSPITAL_API_PATH }}
+        working-directory: ${{ env.HOSPITAL_API_PATH }}
+        run: dotnet run
 
       - name: Run Integration Tests
         run: dotnet test --no-restore --verbosity normal ${{ env.HOSPITAL_INTEGRATION_TESTS_PATH }}
