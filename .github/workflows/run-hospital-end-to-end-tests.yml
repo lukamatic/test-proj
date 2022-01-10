@@ -1,4 +1,4 @@
-name: Run Integration Tests
+name: Run Hospital End to End Tests
 
 on:
   pull_request:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Build web-client
         working-directory: ./WebClients/PatientWebClient
-        run: npm run start
+        run: npm run start &
 
       - name: Sleep for 15 seconds
         run: sleep 15s
