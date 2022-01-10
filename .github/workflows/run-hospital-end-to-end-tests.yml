@@ -30,8 +30,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - uses: browser-actions/setup-chrome@latest
-
       - name: Restore NuGet packages
         run: |
           dotnet restore ${{ env.PROJECT_PATH_HOSPITAL }}
