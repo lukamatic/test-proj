@@ -9,7 +9,7 @@ on:
 env:
   DOTNET_VERSION: '5.0.x'
   HOSPITAL_SOLUTION_PATH: './Hospital'
-  HOSPITAL_API_PATH: './Hospital/HospitalApi'
+  HOSPITAL_DB_PATH: 'host=hospitaldb;port=5432;database=HOSPITAL;username=postgres;password=postgres'
   HOSPITAL_INTEGRATION_TESTS_PATH: './Hospital/HospitalIntegrationTests'
 
 jobs:
