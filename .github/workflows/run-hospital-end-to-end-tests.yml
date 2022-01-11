@@ -27,9 +27,9 @@ jobs:
         image: selenium/standalone-chrome
 
     steps:
-      - run: chrome --version
-
       - uses: nanasess/setup-chromedriver@master
+
+      - run: chrome --version
 
       - name: Check out code
         uses: actions/checkout@v2
