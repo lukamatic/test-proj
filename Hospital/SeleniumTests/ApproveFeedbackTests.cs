@@ -34,7 +34,8 @@ namespace SeleniumTests
             options.AddArguments("--disable-gpu");              
             options.AddArguments("--disable-dev-shm-usage");    
             options.AddArguments("--no-sandbox");               
-            options.AddArguments("--disable-notifications");    
+            options.AddArguments("--disable-notifications");
+            options.AddArguments("--headless");
             driver = new ChromeDriver(options);
             loginPage = new LoginPage(driver);
             loginPage.Navigate();
