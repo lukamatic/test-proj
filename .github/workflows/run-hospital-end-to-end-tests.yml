@@ -27,6 +27,17 @@ jobs:
         image: selenium/standalone-chrome
 
     steps:
+      - name: Installing libs
+        run: |
+          apt-get update
+          apt-get upgrade
+          apt-get -y install unzip
+          apt -y install npm
+          npm install -g npm@latest
+          npm install -g n
+          n 16.13.0
+          hash -r
+
       - name: Setup chrome
         run: |
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
