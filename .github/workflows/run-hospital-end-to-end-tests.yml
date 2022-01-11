@@ -27,7 +27,10 @@ jobs:
         image: selenium/standalone-chrome
 
     steps:
-      - run: google-chrome --version
+      - name: Setup chrome
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          apt -y install ./google-chrome-stable_current_amd64.deb
 
       - name: Check out code
         uses: actions/checkout@v2
