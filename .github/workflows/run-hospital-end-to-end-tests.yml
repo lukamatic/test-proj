@@ -23,9 +23,13 @@ jobs:
           POSTGRES_USER: postgres
       rabbitmq:
         image: rabbitmq:3-management-alpine
+      selenium:
+        image: selenium/standalone-chrome
 
     steps:
       - run: chrome --version
+
+      - uses: nanasess/setup-chromedriver@master
 
       - name: Check out code
         uses: actions/checkout@v2
